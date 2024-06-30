@@ -22,7 +22,7 @@ jobs:
 
       - name: Get commit message
         id: get_message
-        run: echo "::set-output name=message::$(git log --l --pretty=%B)"
+        run: echo "::set-output name=message::$(git log -1 --pretty=%B)"
 
       - name: Parse trailer and apply changes
         run: |
