@@ -1,0 +1,34 @@
+name: Applies-To Trailer Actions
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  apply-changes:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Get commit message
+        id: get_message
+        run: echo "::set-output name=message::$(git log -l --pretty=%B)"
+
+      - name: Parse trailer and apply changes
+        run: |
+          echo "${{ steps.get_message.outputs.message }}" > commit_message.txt
+          python3 .github/scripts/apply_changes.py commit_message.txt
+
+      - name: Push changes
+        run: |
+          git push --all
